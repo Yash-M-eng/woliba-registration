@@ -4,12 +4,16 @@ import FormActions from '../forms/FormActions';
 import FormField from '../forms/FormField';
 import FormCard from '../ui/FormCard';
 import { updateCompany, updateUser } from '../../redux/slices/registrationSlice';
+import { getApiErrorMessage, verifyCompany } from '../../services/registrationApi';
+import { showErrorToast } from '../../utils/toast';
 import { isCompanyPasswordValid } from '../../utils/validators';
 
 const Step1VerifyCompany = ({ onNext }) => {
   const dispatch = useDispatch();
   const formData = useSelector((state) => state.registration.company);
   const [touched, setTouched] = useState({ companyName: false, password: false });
+  const [submitError, setSubmitError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,13 +27,39 @@ const Step1VerifyCompany = ({ onNext }) => {
   const isFormValid =
     formData.companyName.trim() !== '' && isCompanyPasswordValid(formData.password);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setTouched({ companyName: true, password: true });
     if (!isFormValid) return;
-    dispatch(updateCompany({ companyId: 1 }));
-    dispatch(updateUser({ companyName: formData.companyName }));
-    onNext();
+
+    setSubmitError('');
+    setIsSubmitting(true);
+
+    try {
+      const companies = await verifyCompany({
+        companyName: formData.companyName,
+        password: formData.password,
+      });
+      const company = Array.isArray(companies) ? companies[0] : companies;
+
+      if (!company?.id) {
+        throw new Error('Company not found. Please verify the company details.');
+      }
+
+      dispatch(updateCompany({
+        companyId: company.id,
+        companyName: company.company_name || formData.companyName,
+        details: company,
+      }));
+      dispatch(updateUser({ companyName: company.company_name || formData.companyName }));
+      onNext();
+    } catch (error) {
+      const message = getApiErrorMessage(error, error.message || 'Company verification failed.');
+      setSubmitError(message);
+      showErrorToast(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -57,7 +87,8 @@ const Step1VerifyCompany = ({ onNext }) => {
           onBlur={handleBlur}
           error={touched.password && !isCompanyPasswordValid(formData.password) ? 'Min 8 characters, 1 uppercase letter, 1 number.' : ''}
         />
-        <FormActions disabled={!isFormValid} />
+        {submitError && <p className="-mt-2 mb-3 text-[11px] text-red-500">{submitError}</p>}
+        <FormActions disabled={!isFormValid || isSubmitting} primaryLabel={isSubmitting ? 'Verifying...' : 'Next'} />
       </form>
     </FormCard>
   );

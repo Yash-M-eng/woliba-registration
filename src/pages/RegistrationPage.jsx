@@ -33,7 +33,7 @@ const RegistrationPage = () => {
     3: <Step3OtpVerification onNext={goNext} onBack={goBack} />,
     4: <Step4CompleteProfile onNext={goNext} onBack={goBack} />,
     5: <Step5WellnessInterests onNext={goNext} onBack={goBack} />,
-    6: <Step6WellbeingPillars onNext={goNext} onBack={goBack} />,
+    6: <Step6WellbeingPillars onNext={goNext} onBack={goBack} onOtpExpired={() => goToStep(3)} />,
     7: <RegistrationLoader onComplete={goNext} />,
     8: <Welcome />,
   };

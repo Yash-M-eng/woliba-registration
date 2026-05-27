@@ -1,18 +1,67 @@
+import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, ChevronLeft } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { WELLNESS_INTEREST_CATEGORIES } from '../../constants/registration';
 import { updateInterests } from '../../redux/slices/registrationSlice';
+import { getApiErrorMessage, getWellnessInterests } from '../../services/registrationApi';
+import { showErrorToast } from '../../utils/toast';
 
 const iconFor = (option) => option.slice(0, 1);
 
 const Step5WellnessInterests = ({ onNext, onBack }) => {
   const dispatch = useDispatch();
-  const { selected: selectedInterests, openCategory } = useSelector((state) => state.registration.interests);
+  const {
+    selected: selectedInterests,
+    options: interestOptions,
+    openCategory,
+  } = useSelector((state) => state.registration.interests);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState('');
+
+  useEffect(() => {
+    if (interestOptions.length) return;
+
+    const loadInterests = async () => {
+      setIsLoading(true);
+      setLoadError('');
+
+      try {
+        const data = await getWellnessInterests();
+        const options = Array.isArray(data) ? data : [];
+        dispatch(updateInterests({
+          options,
+          openCategory: options[0]?.interest_type || openCategory,
+        }));
+      } catch (error) {
+        const message = getApiErrorMessage(error, 'Unable to load wellness interests.');
+        setLoadError(message);
+        showErrorToast(message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadInterests();
+  }, [dispatch, interestOptions.length, openCategory]);
+
+  const categories = useMemo(() => {
+    return interestOptions.reduce((acc, option) => {
+      const categoryName = option.interest_type || 'Other';
+      const category = acc.find((item) => item.name === categoryName);
+
+      if (category) {
+        category.options.push(option);
+      } else {
+        acc.push({ name: categoryName, options: [option] });
+      }
+
+      return acc;
+    }, []);
+  }, [interestOptions]);
 
   const toggle = (option) => {
-    const nextSelected = selectedInterests.includes(option)
-      ? selectedInterests.filter((item) => item !== option)
-      : [...selectedInterests, option];
+    const nextSelected = selectedInterests.includes(option.id)
+      ? selectedInterests.filter((item) => item !== option.id)
+      : [...selectedInterests, option.id];
 
     dispatch(updateInterests({ selected: nextSelected }));
   };
@@ -21,7 +70,7 @@ const Step5WellnessInterests = ({ onNext, onBack }) => {
     dispatch(updateInterests({ openCategory: openCategory === category ? '' : category }));
   };
 
-  const canProceed = selectedInterests.length > 0;
+  const canProceed = selectedInterests.length > 0 && !isLoading;
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -37,7 +86,15 @@ const Step5WellnessInterests = ({ onNext, onBack }) => {
 
       <form onSubmit={handleSubmit} noValidate>
         <div className="space-y-0.5">
-          {WELLNESS_INTEREST_CATEGORIES.map((category) => {
+          {isLoading && (
+            <p className="py-4 text-center text-[9px] text-textMuted">Loading interests...</p>
+          )}
+
+          {!isLoading && loadError && (
+            <p className="py-4 text-center text-[9px] text-primary">{loadError}</p>
+          )}
+
+          {!isLoading && !loadError && categories.map((category) => {
             const isOpen = openCategory === category.name;
 
             return (
@@ -57,11 +114,11 @@ const Step5WellnessInterests = ({ onNext, onBack }) => {
                 {isOpen && (
                   <div className="flex flex-wrap gap-1.5 pb-1.5">
                     {category.options.map((option) => {
-                      const active = selectedInterests.includes(option);
+                      const active = selectedInterests.includes(option.id);
 
                       return (
                         <button
-                          key={option}
+                          key={option.id}
                           type="button"
                           onClick={() => toggle(option)}
                           className={`flex h-[17px] items-center gap-1 rounded-full border px-2 text-[7px] font-medium transition ${
@@ -70,8 +127,8 @@ const Step5WellnessInterests = ({ onNext, onBack }) => {
                               : 'border-gray-100 bg-white text-secondary hover:border-primary/40'
                           }`}
                         >
-                          <span className={active ? 'text-white' : 'text-primary'}>{iconFor(option)}</span>
-                          {option}
+                          <span className={active ? 'text-white' : 'text-primary'}>{iconFor(option.name)}</span>
+                          {option.name}
                         </button>
                       );
                     })}

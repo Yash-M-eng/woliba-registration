@@ -2,13 +2,23 @@ import { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { FieldBoundary } from '../ErrorBoundary';
 import { updateOtp } from '../../redux/slices/registrationSlice';
+import {
+  getApiErrorMessage,
+  sendRegistrationOtp,
+  verifyRegistrationOtp,
+} from '../../services/registrationApi';
+import { showErrorToast, showSuccessToast } from '../../utils/toast';
 
 const Step3OtpVerification = ({ onNext, onBack }) => {
   const dispatch = useDispatch();
   const otp = useSelector((state) => state.registration.otp.value);
+  const token = useSelector((state) => state.registration.otp.token);
   const email = useSelector((state) => state.registration.user.email);
   const inputRefs = useRef([]);
-  const [timeLeft, setTimeLeft] = useState(179);
+  const [timeLeft, setTimeLeft] = useState(599);
+  const [submitError, setSubmitError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResending, setIsResending] = useState(false);
 
   useEffect(() => {
     if (timeLeft <= 0) return undefined;
@@ -33,15 +43,57 @@ const Step3OtpVerification = ({ onNext, onBack }) => {
 
   const otpValue = otp.join('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (otpValue.length === 6) onNext();
+    if (otpValue.length !== 6 || isSubmitting) return;
+
+    if (!token) {
+      const message = 'OTP session is missing. Please resend the code.';
+      setSubmitError(message);
+      showErrorToast(message);
+      return;
+    }
+
+    setSubmitError('');
+    setIsSubmitting(true);
+
+    try {
+      await verifyRegistrationOtp({ otp: otpValue, token });
+      dispatch(updateOtp({ verified: true }));
+      showSuccessToast('OTP verified successfully.');
+      onNext();
+    } catch (error) {
+      const message = getApiErrorMessage(error, error.message || 'OTP verification failed.');
+      setSubmitError(message);
+      showErrorToast(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleResend = () => {
-    dispatch(updateOtp({ value: ['', '', '', '', '', ''] }));
-    setTimeLeft(179);
-    inputRefs.current[0]?.focus();
+  const handleResend = async () => {
+    if (isResending) return;
+
+    setSubmitError('');
+    setIsResending(true);
+
+    try {
+      const data = await sendRegistrationOtp({ email });
+      dispatch(updateOtp({
+        value: ['', '', '', '', '', ''],
+        token: data?.token || token,
+        verified: false,
+      }));
+      setTimeLeft(599);
+      inputRefs.current[0]?.focus();
+      showSuccessToast(data?.message || 'OTP sent successfully.');
+    } catch (error) {
+      const message = getApiErrorMessage(error, error.message || 'Unable to resend OTP.');
+      setSubmitError(message);
+      showErrorToast(message);
+    } finally {
+      setIsResending(false);
+    }
   };
 
   const formatTime = (seconds) => {
@@ -86,12 +138,15 @@ const Step3OtpVerification = ({ onNext, onBack }) => {
             <button
               type="button"
               onClick={handleResend}
-              className="text-[9px] text-primary font-medium hover:underline bg-transparent border-none cursor-pointer"
+              disabled={isResending}
+              className="text-[9px] text-primary font-medium hover:underline bg-transparent border-none cursor-pointer disabled:cursor-not-allowed disabled:text-gray-400"
             >
-              Resend Code
+              {isResending ? 'Sending...' : 'Resend Code'}
             </button>
           )}
         </div>
+
+        {submitError && <p className="mb-2 text-center text-[9px] text-primary">{submitError}</p>}
 
         <div className="flex gap-2">
           <button
@@ -103,10 +158,10 @@ const Step3OtpVerification = ({ onNext, onBack }) => {
           </button>
           <button
             type="submit"
-            disabled={otpValue.length < 6}
+            disabled={otpValue.length < 6 || isSubmitting}
             className="flex-1 h-[25px] rounded-[2px] text-[9px] font-medium transition-all disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed bg-primary text-white hover:bg-primaryHover"
           >
-            Submit
+            {isSubmitting ? 'Verifying...' : 'Submit'}
           </button>
         </div>
       </form>

@@ -5,6 +5,7 @@ const initialState = {
     companyId: null,
     companyName: '',
     password: '',
+    details: null,
   },
   user: {
     firstName: '',
@@ -15,6 +16,7 @@ const initialState = {
   otp: {
     value: ['', '', '', '', '', ''],
     token: '',
+    verified: false,
   },
   profile: {
     password: '',
@@ -26,10 +28,16 @@ const initialState = {
   },
   interests: {
     selected: [],
+    options: [],
     openCategory: 'Individual Sports',
   },
   pillars: {
     selected: [],
+    options: [],
+  },
+  result: {
+    token: '',
+    user: null,
   },
 };
 
@@ -55,6 +63,9 @@ const registrationSlice = createSlice({
     updatePillars: (state, action) => {
       state.pillars = { ...state.pillars, ...action.payload };
     },
+    updateRegistrationResult: (state, action) => {
+      state.result = { ...state.result, ...action.payload };
+    },
   },
 });
 
@@ -65,6 +76,7 @@ export const {
   updateProfile,
   updateInterests,
   updatePillars,
+  updateRegistrationResult,
 } = registrationSlice.actions;
 
 export default registrationSlice.reducer;
