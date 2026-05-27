@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import ErrorBoundary from '../components/ErrorBoundary';
+import RegistrationLoader from '../components/registration/RegistrationLoader';
+import Step1VerifyCompany from '../components/registration/Step1VerifyCompany';
+import Step2UserDetails from '../components/registration/Step2UserDetails';
+import Step3OtpVerification from '../components/registration/Step3OtpVerification';
+import Step4CompleteProfile from '../components/registration/Step4CompleteProfile';
+import Step5WellnessInterests from '../components/registration/Step5WellnessInterests';
+import Step6WellbeingPillars from '../components/registration/Step6WellbeingPillars';
+import Welcome from '../components/registration/Welcome';
 import { REGISTRATION_ROUTES } from '../constants/registration';
-import Step1VerifyCompany from './Step1VerifyCompany';
-import Step2UserDetails from './Step2UserDetails';
-import Step3OtpVerification from './Step3OtpVerification';
-import Step4CompleteProfile from './Step4CompleteProfile';
-import Step5WellnessInterests from './Step5WellnessInterests';
-import Step6WellbeingPillars from './Step6WellbeingPillars';
-import Step7RegistrationLoader from './Step7RegistrationLoader';
-import Step8Welcome from './Step8Welcome';
 
 const RegistrationPage = () => {
   const navigate = useNavigate();
@@ -26,35 +27,22 @@ const RegistrationPage = () => {
   const goNext = () => goToStep(step + 1);
   const goBack = () => goToStep(step - 1);
 
-  if (step === 1) {
-    return <Step1VerifyCompany onNext={goNext} />;
-  }
+  const steps = {
+    1: <Step1VerifyCompany onNext={goNext} />,
+    2: <Step2UserDetails onNext={goNext} onBack={goBack} />,
+    3: <Step3OtpVerification onNext={goNext} onBack={goBack} />,
+    4: <Step4CompleteProfile onNext={goNext} onBack={goBack} />,
+    5: <Step5WellnessInterests onNext={goNext} onBack={goBack} />,
+    6: <Step6WellbeingPillars onNext={goNext} onBack={goBack} />,
+    7: <RegistrationLoader onComplete={goNext} />,
+    8: <Welcome />,
+  };
 
-  if (step === 2) {
-    return <Step2UserDetails onNext={goNext} onBack={goBack} />;
-  }
-
-  if (step === 3) {
-    return <Step3OtpVerification onNext={goNext} onBack={goBack} />;
-  }
-
-  if (step === 4) {
-    return <Step4CompleteProfile onNext={goNext} onBack={goBack} />;
-  }
-
-  if (step === 5) {
-    return <Step5WellnessInterests onNext={goNext} onBack={goBack} />;
-  }
-
-  if (step === 6) {
-    return <Step6WellbeingPillars onNext={goNext} onBack={goBack} />;
-  }
-
-  if (step === 7) {
-    return <Step7RegistrationLoader onComplete={goNext} />;
-  }
-
-  return <Step8Welcome />;
+  return (
+    <ErrorBoundary variant="page" resetKeys={[step]}>
+      {steps[step] || steps[8]}
+    </ErrorBoundary>
+  );
 };
 
 export default RegistrationPage;

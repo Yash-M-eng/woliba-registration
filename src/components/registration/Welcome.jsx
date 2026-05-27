@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
-import shivaniImage from '../assets/shivani.png';
+import shivaniImage from '../../assets/shivani.png';
 
-const Step8Welcome = () => {
+const Welcome = () => {
   const firstName = useSelector((state) => state.registration.user.firstName);
   const displayName = firstName || 'Shivani';
 
@@ -27,4 +27,4 @@ const Step8Welcome = () => {
   );
 };
 
-export default Step8Welcome;
+export default Welcome;

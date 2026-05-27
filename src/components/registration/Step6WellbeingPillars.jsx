@@ -1,7 +1,7 @@
 import { ChevronLeft } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { WELLBEING_PILLARS } from '../constants/registration';
-import { updatePillars } from '../redux/slices/registrationSlice';
+import { WELLBEING_PILLARS } from '../../constants/registration';
+import { updatePillars } from '../../redux/slices/registrationSlice';
 
 const Step6WellbeingPillars = ({ onNext, onBack }) => {
   const dispatch = useDispatch();

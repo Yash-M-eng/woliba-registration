@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import FormActions from '../components/forms/FormActions';
-import FormField from '../components/forms/FormField';
-import FormCard from '../components/ui/FormCard';
-import { updateCompany, updateUser } from '../redux/slices/registrationSlice';
-import { isCompanyPasswordValid } from '../utils/validators';
+import FormActions from '../forms/FormActions';
+import FormField from '../forms/FormField';
+import FormCard from '../ui/FormCard';
+import { updateCompany, updateUser } from '../../redux/slices/registrationSlice';
+import { isCompanyPasswordValid } from '../../utils/validators';
 
 const Step1VerifyCompany = ({ onNext }) => {
   const dispatch = useDispatch();

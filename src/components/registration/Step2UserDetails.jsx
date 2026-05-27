@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import FormActions from '../components/forms/FormActions';
-import FormField from '../components/forms/FormField';
-import FormCard from '../components/ui/FormCard';
-import { updateOtp, updateUser } from '../redux/slices/registrationSlice';
-import { isEmailValid, isNameValue } from '../utils/validators';
+import FormActions from '../forms/FormActions';
+import FormField from '../forms/FormField';
+import FormCard from '../ui/FormCard';
+import { updateOtp, updateUser } from '../../redux/slices/registrationSlice';
+import { isEmailValid, isNameValue } from '../../utils/validators';
 
 const Step2UserDetails = ({ onNext }) => {
   const dispatch = useDispatch();

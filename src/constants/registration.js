@@ -5,8 +5,8 @@ export const REGISTRATION_ROUTES = [
   '/registration/login-credentials',
   '/registration/wellness-interests',
   '/registration/wellbeing-pillars',
-  '/registration/processing',
-  '/registration/welcome',
+  '/dashboard/registrationloader',
+  '/dashboard/welcome',
 ];
 
 export const WELLNESS_INTEREST_CATEGORIES = [

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import loaderVideo from '../assets/Loader scrren GIF.mp4';
+import loaderVideo from '../../assets/Loader scrren GIF.mp4';
 
-const Step7RegistrationLoader = ({ onComplete }) => {
+const RegistrationLoader = ({ onComplete }) => {
   useEffect(() => {
     const timer = window.setTimeout(onComplete, 2600);
     return () => window.clearTimeout(timer);
@@ -27,4 +27,4 @@ const Step7RegistrationLoader = ({ onComplete }) => {
   );
 };
 
-export default Step7RegistrationLoader;
+export default RegistrationLoader;

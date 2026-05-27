@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateProfile } from '../redux/slices/registrationSlice';
-import { isCompanyPasswordValid, isPhoneValid } from '../utils/validators';
+import { FieldBoundary } from '../ErrorBoundary';
+import { updateProfile } from '../../redux/slices/registrationSlice';
+import { isCompanyPasswordValid, isPhoneValid } from '../../utils/validators';
 
 const months = [
   'January',
@@ -287,119 +288,129 @@ const Step4CompleteProfile = ({ onNext, onBack }) => {
         </h2>
 
         <form onSubmit={handleSubmit} noValidate>
-          <div className="mb-2.5">
-            <label className="block text-[9px] font-medium text-secondary mb-1" htmlFor="password">
-              Password
-            </label>
-            <div className="relative">
+          <FieldBoundary>
+            <div className="mb-2.5">
+              <label className="block text-[9px] font-medium text-secondary mb-1" htmlFor="password">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  name="password"
+                  className={`${inputBase} pr-8 ${touched.password && !isCompanyPasswordValid(formData.password) ? inputError : inputNormal}`}
+                  placeholder="Enter password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                <EyeIcon visible={showPassword} onClick={() => setShowPassword(!showPassword)} />
+              </div>
+              {touched.password && !isCompanyPasswordValid(formData.password) && (
+                <p className="text-primary text-[9px] mt-1">
+                  Use 8+ characters, 1 uppercase letter, and 1 number.
+                </p>
+              )}
+            </div>
+          </FieldBoundary>
+
+          <FieldBoundary>
+            <div className="mb-2.5">
+              <label className="block text-[9px] font-medium text-secondary mb-1" htmlFor="confirmPassword">
+                Confirm password
+              </label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  className={`${inputBase} pr-8 ${passwordsDoNotMatch ? inputError : inputNormal}`}
+                  placeholder="Enter password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                <EyeIcon
+                  visible={showConfirmPassword}
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                />
+              </div>
+              {passwordsDoNotMatch && (
+                <p className="text-primary text-[9px] mt-1">Passwords do not match. Please re-enter.</p>
+              )}
+            </div>
+          </FieldBoundary>
+
+          <FieldBoundary>
+            <div className="mb-2.5">
+              <label className="block text-[9px] font-medium text-secondary mb-1" htmlFor="birthdayButton">
+                Birthday
+              </label>
+              <button
+                type="button"
+                id="birthdayButton"
+                onClick={() => setIsDatePickerOpen(true)}
+                onBlur={() => setTouched((prev) => ({ ...prev, dob: true }))}
+                className={`${inputBase} flex items-center justify-between text-left ${
+                  touched.dob && !isDobValid(formData.dob) ? inputError : inputNormal
+                } ${formData.dob ? 'text-secondary' : 'text-gray-300'}`}
+              >
+                <span>{toDisplayDate(formData.dob) || 'Select date of birth [MM/DD/YYYY]'}</span>
+                <span className="text-primary">
+                  <CalendarIcon />
+                </span>
+              </button>
+              {touched.dob && !isDobValid(formData.dob) && (
+                <p className="text-primary text-[9px] mt-1">
+                  {formData.dob ? 'Birthday cannot be a future date.' : 'Birthday is required.'}
+                </p>
+              )}
+            </div>
+          </FieldBoundary>
+
+          <FieldBoundary>
+            <div className="mb-3">
+              <label className="block text-[9px] font-medium text-secondary mb-1" htmlFor="phone">
+                Contact number
+              </label>
               <input
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                name="password"
-                className={`${inputBase} pr-8 ${touched.password && !isCompanyPasswordValid(formData.password) ? inputError : inputNormal}`}
-                placeholder="Enter password"
-                value={formData.password}
+                type="tel"
+                id="phone"
+                name="phone"
+                className={`${inputBase} ${touched.phone && !isPhoneValid(formData.phone) ? inputError : inputNormal}`}
+                placeholder="Enter contact number"
+                value={formData.phone}
+                inputMode="numeric"
+                maxLength={15}
+                pattern="[0-9]*"
                 onChange={handleChange}
                 onBlur={handleBlur}
               />
-              <EyeIcon visible={showPassword} onClick={() => setShowPassword(!showPassword)} />
+              {touched.phone && !isPhoneValid(formData.phone) && (
+                <p className="text-primary text-[9px] mt-1">Enter a valid contact number.</p>
+              )}
             </div>
-            {touched.password && !isCompanyPasswordValid(formData.password) && (
-              <p className="text-primary text-[9px] mt-1">
-                Use 8+ characters, 1 uppercase letter, and 1 number.
-              </p>
-            )}
-          </div>
+          </FieldBoundary>
 
-          <div className="mb-2.5">
-            <label className="block text-[9px] font-medium text-secondary mb-1" htmlFor="confirmPassword">
-              Confirm password
-            </label>
-            <div className="relative">
+          <FieldBoundary>
+            <div className="mb-5 flex items-center gap-2">
               <input
-                type={showConfirmPassword ? 'text' : 'password'}
-                id="confirmPassword"
-                name="confirmPassword"
-                className={`${inputBase} pr-8 ${passwordsDoNotMatch ? inputError : inputNormal}`}
-                placeholder="Enter password"
-                value={formData.confirmPassword}
+                type="checkbox"
+                id="termsAccepted"
+                name="termsAccepted"
+                checked={formData.termsAccepted}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                className="h-[11px] w-[11px] rounded-sm border-inputBorder text-primary focus:ring-primary"
               />
-              <EyeIcon
-                visible={showConfirmPassword}
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              />
+              <label htmlFor="termsAccepted" className="text-[9px] text-secondary leading-none">
+                I agree to Woliba's{' '}
+                <a href="#" className="text-primary hover:underline">Terms of Service</a>
+                {' '}and{' '}
+                <a href="#" className="text-primary hover:underline">Privacy Policy</a>.
+              </label>
             </div>
-            {passwordsDoNotMatch && (
-              <p className="text-primary text-[9px] mt-1">Passwords do not match. Please re-enter.</p>
-            )}
-          </div>
-
-          <div className="mb-2.5">
-            <label className="block text-[9px] font-medium text-secondary mb-1" htmlFor="birthdayButton">
-              Birthday
-            </label>
-            <button
-              type="button"
-              id="birthdayButton"
-              onClick={() => setIsDatePickerOpen(true)}
-              onBlur={() => setTouched((prev) => ({ ...prev, dob: true }))}
-              className={`${inputBase} flex items-center justify-between text-left ${
-                touched.dob && !isDobValid(formData.dob) ? inputError : inputNormal
-              } ${formData.dob ? 'text-secondary' : 'text-gray-300'}`}
-            >
-              <span>{toDisplayDate(formData.dob) || 'Select date of birth [MM/DD/YYYY]'}</span>
-              <span className="text-primary">
-                <CalendarIcon />
-              </span>
-            </button>
-            {touched.dob && !isDobValid(formData.dob) && (
-              <p className="text-primary text-[9px] mt-1">
-                {formData.dob ? 'Birthday cannot be a future date.' : 'Birthday is required.'}
-              </p>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label className="block text-[9px] font-medium text-secondary mb-1" htmlFor="phone">
-              Contact number
-            </label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              className={`${inputBase} ${touched.phone && !isPhoneValid(formData.phone) ? inputError : inputNormal}`}
-              placeholder="Enter contact number"
-              value={formData.phone}
-              inputMode="numeric"
-              maxLength={15}
-              pattern="[0-9]*"
-              onChange={handleChange}
-              onBlur={handleBlur}
-            />
-            {touched.phone && !isPhoneValid(formData.phone) && (
-              <p className="text-primary text-[9px] mt-1">Enter a valid contact number.</p>
-            )}
-          </div>
-
-          <div className="mb-5 flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="termsAccepted"
-              name="termsAccepted"
-              checked={formData.termsAccepted}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              className="h-[11px] w-[11px] rounded-sm border-inputBorder text-primary focus:ring-primary"
-            />
-            <label htmlFor="termsAccepted" className="text-[9px] text-secondary leading-none">
-              I agree to Woliba's{' '}
-              <a href="#" className="text-primary hover:underline">Terms of Service</a>
-              {' '}and{' '}
-              <a href="#" className="text-primary hover:underline">Privacy Policy</a>.
-            </label>
-          </div>
+          </FieldBoundary>
 
           {touched.termsAccepted && !formData.termsAccepted && (
             <p className="-mt-4 mb-3 text-primary text-[9px]">Please accept the terms to continue.</p>

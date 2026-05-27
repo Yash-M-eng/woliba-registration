@@ -1,7 +1,7 @@
 import { ChevronDown, ChevronLeft } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { WELLNESS_INTEREST_CATEGORIES } from '../constants/registration';
-import { updateInterests } from '../redux/slices/registrationSlice';
+import { WELLNESS_INTEREST_CATEGORIES } from '../../constants/registration';
+import { updateInterests } from '../../redux/slices/registrationSlice';
 
 const iconFor = (option) => option.slice(0, 1);
 

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateOtp } from '../redux/slices/registrationSlice';
+import { FieldBoundary } from '../ErrorBoundary';
+import { updateOtp } from '../../redux/slices/registrationSlice';
 
 const Step3OtpVerification = ({ onNext, onBack }) => {
   const dispatch = useDispatch();
@@ -61,17 +62,18 @@ const Step3OtpVerification = ({ onNext, onBack }) => {
       <form onSubmit={handleSubmit}>
         <div className="flex justify-center gap-1.5 mb-2">
           {otp.map((digit, i) => (
-            <input
-              key={i}
-              type="text"
-              inputMode="numeric"
-              className="w-[27px] h-[24px] text-center text-[11px] font-semibold border border-inputBorder rounded-[2px] text-secondary outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary/10"
-              value={digit}
-              onChange={(e) => handleChange(e, i)}
-              onKeyDown={(e) => handleKeyDown(e, i)}
-              ref={(el) => (inputRefs.current[i] = el)}
-              maxLength={1}
-            />
+            <FieldBoundary key={i} variant="inline">
+              <input
+                type="text"
+                inputMode="numeric"
+                className="w-[27px] h-[24px] text-center text-[11px] font-semibold border border-inputBorder rounded-[2px] text-secondary outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary/10"
+                value={digit}
+                onChange={(e) => handleChange(e, i)}
+                onKeyDown={(e) => handleKeyDown(e, i)}
+                ref={(el) => (inputRefs.current[i] = el)}
+                maxLength={1}
+              />
+            </FieldBoundary>
           ))}
         </div>
 
