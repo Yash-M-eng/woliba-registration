@@ -4,7 +4,7 @@ A responsive multi-step user registration flow for Woliba, built with React, Vit
 
 ## Live Deployment
 
-Vercel deployment: https://woliba-registration.vercel.app
+Vercel deployment: https://woliba-registration.vercel.app/registration
 
 ## Clone And Run 
 
