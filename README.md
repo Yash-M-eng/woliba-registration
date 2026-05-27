@@ -1,39 +1,132 @@
 # Woliba Registration Flow
 
-## Features
+A responsive multi-step user registration flow for Woliba, built with React, Vite, Redux, Axios, React Router, and Tailwind CSS.
 
-- Multi-step registration with controlled validation
-- Local state persistence with Redux Toolkit
-- Clear routing and layout separation
-- Mobile-first layout with Tailwind CSS
-- Reusable form and UI primitives
+## Live Deployment
 
-## Tech Stack
+Vercel deployment: https://woliba-registration.vercel.app
 
-- React + Vite
-- JavaScript (no TypeScript)
-- Redux Toolkit + React Redux
-- React Router DOM
-- Tailwind CSS
-- Lucide React icons
-
-## Requirements
-
-- Node.js 18+ (recommended)
-- npm 9+
-
-## Quick Start
+## Clone And Run 
 
 ```bash
+git clone https://github.com/Yash-M-eng/woliba-registration.git
+cd woliba-registration
 npm install
 npm run dev
 ```
 
-Open the Vite URL and visit:
+Open the local Vite URL and visit:
 
 ```bash
 /registration
 ```
+
+## Environment
+
+Local development can use the Vite API proxy by leaving `VITE_API_BASE_URL` unset.
+
+To call the API directly, create an `.env` file:
+
+```bash
+VITE_API_BASE_URL=https://dev.woliba.io/v1/
+```
+
+## Tech Stack
+
+- React + Vite
+- Redux Toolkit + React Redux
+- React Router DOM
+- Axios for API calls
+- React Toastify for toast messages
+- Tailwind CSS for styling
+- Lucide React icons
+
+## Folder Structure
+
+```bash
+src/
+├── assets/                    # Images and loader video
+├── components/
+│   ├── forms/                 # Reusable form controls
+│   ├── layouts/               # Registration layout
+│   ├── registration/          # Registration flow components
+│   └── ui/                    # Shared UI primitives
+├── constants/                 # Routes and static constants
+├── pages/                     # Page-level route controllers
+├── redux/                     # Store and registration slice
+├── routes/                    # App routing
+├── services/                  # Axios API service
+├── styles/                    # Tailwind/global styles
+├── utils/                     # Validation and toast helpers
+├── App.jsx
+└── main.jsx
+```
+
+## Registration Flow
+
+```mermaid
+flowchart TD
+  A[Start: /registration] --> B[Verify Company Name + Password]
+  B --> C[User Details + Send OTP]
+  C --> D[Verify OTP]
+  D --> E[Login Credentials + Profile Details]
+  E --> F[Select Wellness Interests]
+  F --> G[Select 3 Wellbeing Pillars]
+  G --> H[/dashboard/registrationloader]
+  H --> I[/dashboard/welcome]
+```
+
+## API Integration
+
+API calls are handled with Axios in `src/services/registrationApi.js`.
+
+Integrated endpoints:
+
+- Verify company name and password
+- Save user details and send OTP
+- Verify OTP
+- Resend OTP
+- Get wellness interests
+- Get wellbeing pillars
+- Complete user registration
+
+Redux is used to store registration data, company details, OTP token, selected interest IDs, selected pillar IDs, and final registration result where needed.
+
+## Error Handling
+
+The app includes production-level error boundaries:
+
+- App-level boundary
+- Route/page-level boundary
+- Step-level boundary
+- Input/field-level boundaries
+
+API errors are normalized from backend responses and shown with toast messages. JSON and XML backend error responses are supported.
+
+## Validation
+
+Proper validation is added for all input fields:
+
+- Company name is required
+- Company password is required and validated
+- Email format is validated
+- First and last names allow letters and spaces only
+- OTP accepts digits only and requires 6 digits
+- Password and confirm password must match
+- Phone number accepts digits only
+- Terms and privacy policy must be accepted
+- At least one wellness interest is required
+- Exactly 3 wellbeing pillars are required
+
+Calendar validation is also added:
+
+- Users cannot select future dates for birthday
+- Future dates are disabled in the calendar picker
+- Future date values are blocked during form validation
+
+## Responsive Design
+
+The UI is built with Tailwind CSS and is responsive across mobile, tablet, and desktop devices.
 
 ## Scripts
 
@@ -44,76 +137,12 @@ npm run preview
 npm run lint
 ```
 
-## Project Structure
+## Deployment
 
-```bash
-src/
-├── assets/              # Images and video assets
-├── components/
-│   ├── forms/           # Reusable form controls
-│   ├── layouts/         # Page layouts
-│   └── ui/              # Shared UI primitives
-├── constants/           # Route and option constants
-├── pages/               # Registration flow screens
-├── redux/               # Redux store and slices
-├── routes/              # Route configuration
-├── styles/              # Global styles
-├── utils/               # Validation helpers
-├── App.jsx
-└── main.jsx
-```
-
-## Registration Flow
-
-1. Verify company name and company password
-2. Save user details locally and continue to OTP
-3. Verify 6-digit OTP locally
-4. Complete login credentials and profile details
-5. Select wellness interests
-6. Select exactly 3 wellbeing pillars
-7. Show processing loader
-8. Show welcome screen
-
-API integration is intentionally omitted for the test task. Add it later inside a dedicated `src/api/` or `src/services/` layer.
-
-## Validation Rules
-
-- Company password requires at least 8 characters, 1 uppercase letter, and 1 number.
-- Email must use a valid email format.
-- First and last names allow letters and spaces only.
-- OTP requires 6 digits.
-- Profile password and confirm password must match.
-- Phone number requires 7 to 15 digits with optional leading `+`.
-- At least one wellness interest is required.
-- Exactly 3 wellbeing pillars are required.
-
-## State Management
-
-Global state is stored in Redux and scoped to the registration flow. The registration slice contains form data, validation state, and the current step index.
-
-## Routing
-
-Routes are centralized in `src/routes/AppRoutes.jsx`. The registration flow is mounted under `/registration`.
-
-## Build and Preview
+The project is deployed on Vercel. For production builds:
 
 ```bash
 npm run build
-npm run preview
 ```
 
-## Deployment Notes
-
-- The app is a static SPA built with Vite.
-- Configure your host to serve `index.html` for all routes.
-- For production, set up caching for assets under `/assets/` and no-cache for `index.html`.
-
-## Testing
-
-No automated tests are configured in this repository. If you add tests, keep them colocated with the features they cover and wire scripts in `package.json`.
-
-## Contributing
-
-1. Create a feature branch.
-2. Keep commits focused and descriptive.
-3. Run `npm run lint` before opening a PR.
+Vercel should serve the Vite SPA and fallback routes to `index.html`.
