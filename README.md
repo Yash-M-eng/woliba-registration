@@ -146,3 +146,41 @@ npm run build
 ```
 
 Vercel should serve the Vite SPA and fallback routes to `index.html`.
+
+
+
+## Preview Images 
+
+Screen 1 : 
+<img width="1288" height="649" alt="image" src="https://github.com/user-attachments/assets/60a1bf7b-e44f-4b6c-88d7-914520cb17d6" />
+
+Screen 2 : 
+<img width="1288" height="649" alt="image" src="https://github.com/user-attachments/assets/48653c30-3c07-4eb7-95dd-8a472080dae3" />
+
+Screen 3 : 
+<img width="1288" height="649" alt="image" src="https://github.com/user-attachments/assets/465b34ad-97dc-4d64-9879-cfaaf8e1faf2" />
+
+Screen 4 :
+<img width="1288" height="649" alt="image" src="https://github.com/user-attachments/assets/52698b85-1ab5-40ff-bfdb-e0fdad45018d" />
+
+
+Screen 5 :
+<img width="1288" height="649" alt="image" src="https://github.com/user-attachments/assets/6c9c97ee-f71f-4798-9c87-5727ea774c93" />
+
+
+Screen 6 :
+<img width="1288" height="649" alt="image" src="https://github.com/user-attachments/assets/4c27c0b4-fe1d-4b28-aa3a-6e0790e1d6c2" />
+
+Screen 7 : 
+<img width="1288" height="649" alt="image" src="https://github.com/user-attachments/assets/094880ec-f97a-454c-b73b-fa33fa63148f" />
+
+
+Screen 8 : 
+<img width="1288" height="649" alt="image" src="https://github.com/user-attachments/assets/6f0db845-053c-43d1-bace-5b9c783ea49d" />
+
+
+
+
+
+
+
