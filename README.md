@@ -66,14 +66,14 @@ src/
 
 ```mermaid
 flowchart TD
-  A[Start: /registration] --> B[Verify Company Name + Password]
-  B --> C[User Details + Send OTP]
-  C --> D[Verify OTP]
-  D --> E[Login Credentials + Profile Details]
-  E --> F[Select Wellness Interests]
-  F --> G[Select 3 Wellbeing Pillars]
-  G --> H[/dashboard/registrationloader]
-  H --> I[/dashboard/welcome]
+  A["Start: /registration"] --> B["Verify Company Name + Password"]
+  B --> C["User Details + Send OTP"]
+  C --> D["Verify OTP"]
+  D --> E["Login Credentials + Profile Details"]
+  E --> F["Select Wellness Interests"]
+  F --> G["Select 3 Wellbeing Pillars"]
+  G --> H["/dashboard/registrationloader"]
+  H --> I["/dashboard/welcome"]
 ```
 
 ## API Integration
